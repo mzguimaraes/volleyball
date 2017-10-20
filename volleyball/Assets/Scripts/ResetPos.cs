@@ -9,6 +9,8 @@ public class ResetPos : MonoBehaviour, IGlobalTouchpadPressDownHandler {
   public SteamVR_TrackedController leftController;
   public SteamVR_TrackedController rightController;
 
+  Rigidbody rb;
+
   private Vector3 originalPos;
 
 
@@ -25,27 +27,34 @@ public class ResetPos : MonoBehaviour, IGlobalTouchpadPressDownHandler {
 	// Use this for initialization
 	void Start () {
     originalPos = transform.position;
-    Debug.Log("original pos: " + originalPos.ToString());
-
-    //string[] joysticks = Input.GetJoystickNames();
-    //foreach (string stick in joysticks) {
-    //  Debug.Log(stick);
-    //}
+    rb = GetComponent<Rigidbody>();
   }
 	
+  void Reset() {
+    transform.position = originalPos;
+    transform.rotation = Quaternion.identity;
+
+    //attempt to reset velocity
+    if (rb != null) {
+      rb.velocity = Vector3.zero;
+      rb.angularVelocity = Vector3.zero;
+    } else {
+      Debug.Log("no rb");
+    }
+  }
+
 	// Update is called once per frame
 	void Update () {
     if (Input.GetKeyDown(KeyCode.Space)) {
-      Debug.Log("Resetting to " + originalPos.ToString());
-      transform.position = originalPos;
+      Reset();
     }
 	}
 
   private void HandleGripped(object sender, ClickedEventArgs e) {
-    transform.position = originalPos;
+    Reset();
   }
 
   public void OnGlobalTouchpadPressDown(VREventData eventData) {
-    transform.position = originalPos;
+    Reset();
   }
 }
