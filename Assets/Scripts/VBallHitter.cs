@@ -69,9 +69,11 @@ public class VBallHitter : MonoBehaviour {
       }
 
       ContactPoint cPoint = contacts[0];
-      //Debug.Log("Force applied: " + (-cPoint.normal.normalized * vel.magnitude));
-      //Debug.Log("Normal: " + cPoint.normal.normalized);
-      col.rigidbody.AddForceAtPosition(cPoint.normal.normalized * vel.magnitude * impactScalar, cPoint.point);
+
+      //FT = MV
+      //F = MV/T
+      //where V = vel.magnitude
+      col.rigidbody.AddForceAtPosition(-cPoint.normal.normalized * vel.magnitude * (1f / Time.deltaTime) * impactScalar, cPoint.point);
 
       TriggerHapticFeedback(hapticFactor * (vel.magnitude + col.rigidbody.velocity.magnitude) );
     }

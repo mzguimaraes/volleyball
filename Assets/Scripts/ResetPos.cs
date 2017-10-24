@@ -15,13 +15,17 @@ public class ResetPos : MonoBehaviour, IGlobalTouchpadPressDownHandler {
 
 
   private void OnEnable() {
-    leftController.Gripped += HandleGripped;
-    rightController.Gripped += HandleGripped;
+    //leftController.Gripped += HandleGripped;
+    //rightController.Gripped += HandleGripped;
+    leftController.PadClicked += HandlePadClicked;
+    rightController.PadClicked += HandlePadClicked;
   }
 
   private void OnDisable() {
-    leftController.Gripped -= HandleGripped;
-    rightController.Gripped -= HandleGripped;
+    //leftController.Gripped -= HandleGripped;
+    //rightController.Gripped -= HandleGripped;
+    leftController.PadClicked -= HandlePadClicked;
+    rightController.PadClicked -= HandlePadClicked;
   }
 
 	// Use this for initialization
@@ -49,6 +53,10 @@ public class ResetPos : MonoBehaviour, IGlobalTouchpadPressDownHandler {
       Reset();
     }
 	}
+
+  private void HandlePadClicked(object sender, ClickedEventArgs e) {
+    Reset();
+  }
 
   private void HandleGripped(object sender, ClickedEventArgs e) {
     Reset();
