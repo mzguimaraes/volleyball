@@ -14,6 +14,8 @@ public class VBallHitter : MonoBehaviour {
   private Rigidbody rb;
   private Vector3 prevPos; //tracked using Update's time step -- would use FixedUpdate if i could achieve a LateFixedUpdate effect
   private Vector3 vel; //velocity
+  private Vector3 prevVel; //Velocity at previous frame
+  private Vector3 accel; //acceleration
 
 
   void Awake() {
@@ -30,13 +32,22 @@ public class VBallHitter : MonoBehaviour {
     return vel;
   }
 
+  Vector3 UpdateAcceleration() {
+    Vector3 dv = vel - prevVel;
+    accel = dv / Time.deltaTime;
+
+    return accel;
+  }
+
   void Update() {
     UpdateVelocity();
+    UpdateAcceleration();
   }
 
   void LateUpdate() {
     //want this to happen as late as possible, after all other game logic
     prevPos = transform.position;
+    prevVel = vel;
   }
 
   void TriggerHapticFeedback(float impactMagnitude) {
@@ -73,7 +84,13 @@ public class VBallHitter : MonoBehaviour {
       //FT = MV
       //F = MV/T
       //where V = vel.magnitude
-      col.rigidbody.AddForceAtPosition(-cPoint.normal.normalized * vel.magnitude * (1f / Time.deltaTime) * impactScalar, cPoint.point);
+      Vector3 impactForce = -cPoint.normal.normalized * vel.magnitude * (1f / Time.deltaTime) * impactScalar;
+      //col.rigidbody.AddForceAtPosition(-cPoint.normal.normalized * vel.magnitude * (1f / Time.deltaTime) * impactScalar, cPoint.point);
+
+      //F = MA
+      //Vector3 impactForce = rb.mass * accel.magnitude * -cPoint.normal.normalized * impactScalar;
+      col.rigidbody.AddForceAtPosition(impactForce, cPoint.point);
+      Debug.Log("Hand force: " + impactForce);
 
       TriggerHapticFeedback(hapticFactor * (vel.magnitude + col.rigidbody.velocity.magnitude) );
     }

@@ -6,17 +6,27 @@ using UnityEngine;
 public class Volleyball : MonoBehaviour {
   //tag class
 
-  //debug
-  //private Rigidbody rb;
-  //private Vector3 prevPos;
+  private TrailRenderer trail;
+  private Rigidbody rb;
 
-  //void Start() {
-  //  rb = GetComponent<Rigidbody>();
-  //  prevPos = transform.position;
-  //}
+  public float trailThreshold = 1f;
 
-  //void FixedUpdate() {
-  //  Debug.Log(rb.velocity + ", " + ( (transform.position - prevPos) ) / Time.fixedDeltaTime );
-  //  prevPos = transform.position;
-  //}
+  void Awake() {
+    rb = GetComponent<Rigidbody>();
+    trail = GetComponent<TrailRenderer>();
+    trail.enabled = false;
+  }
+
+  void Update() {
+    if (!trail.enabled && rb.velocity.magnitude > trailThreshold)
+      trail.enabled = true;
+    else if (trail.enabled && rb.velocity.magnitude < trailThreshold)
+      trail.enabled = false;
+    trail.time = (rb.velocity.magnitude - trailThreshold) / 4f;
+  }
+
+  void OnCollisionEnter(Collision col) {
+    if (col.gameObject.GetComponent<VBallHitter>() || col.gameObject.GetComponent<RallyBot>())
+      Debug.Log("Volleyball force: " + col.impulse / Time.fixedDeltaTime);
+  }
 }
